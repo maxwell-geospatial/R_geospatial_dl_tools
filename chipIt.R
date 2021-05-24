@@ -2,7 +2,7 @@ chipIt <- function(image, mask, size=256, stride_x=256, sride_y=256, outDir, mod
   require(terra)
   require(imager)
   if(mode == "All"){
-    topo1 <- rast(image)
+    img1 <- rast(image)
     mask1 <- rast(mask)
     
     fName = basename(image)
@@ -10,8 +10,8 @@ chipIt <- function(image, mask, size=256, stride_x=256, sride_y=256, outDir, mod
     dir.create(paste0(outDir, "/images"))
     dir.create(paste0(outDir, "/masks"))
     
-    across_cnt = ncol(topo1)
-    down_cnt = nrow(topo1)
+    across_cnt = ncol(img1)
+    down_cnt = nrow(img1)
     tile_size_across = size
     tile_size_down = size
     overlap_across = stride_x
@@ -32,24 +32,24 @@ chipIt <- function(image, mask, size=256, stride_x=256, sride_y=256, outDir, mod
         c2 <- c + (stride_x-1)
         r2 <- r + (stride_y-1)
         if(c2 <= across_cnt && r2 <= down_cnt){ #Full chip
-          chip_data <- topo1[r1:r2, c1:c2, 1:3]
+          chip_data <- img1[r1:r2, c1:c2, 1:3]
           mask_data <- mask1[r1:r2, c1:c2, 1]
         }else if(c2 > across_cnt && r2 <= down_cnt){ # Last column
           c1b <- across_cnt - (size-1)
           c2b <- across_cnt
-          chip_data <- topo1[r1:r2, c1b:c2b, 1:3]
+          chip_data <- img1[r1:r2, c1b:c2b, 1:3]
           mask_data <- mask1[r1:r2, c1b:c2b, 1]
         }else if(c2 <= across_cnt && r2 > down_cnt){ #Last row
           r1b <- down_cnt - (size-1)
           r2b <- down_cnt
-          chip_data <- topo1[r1b:r2b, c1:c2, 1:3]
+          chip_data <- img1[r1b:r2b, c1:c2, 1:3]
           mask_data <- mask1[r1b:r2b, c1:c2, 1]
         }else{ # Last row, last column
           c1b <- across_cnt - (size -1)
           c2b <- across_cnt
           r1b <- down_cnt - (size -1)
           r2b <- down_cnt
-          chip_data <- topo1[r1b:r2b, c1b:c2b, 1:3]
+          chip_data <- img1[r1b:r2b, c1b:c2b, 1:3]
           mask_data <- mask1[r1b:r2b, c1b:c2b, 1]
         }
         names(chip_data) <- c("R", "G", "B")
@@ -68,7 +68,7 @@ chipIt <- function(image, mask, size=256, stride_x=256, sride_y=256, outDir, mod
       }
     }
   }else if(mode == "Positive"){
-    topo1 <- rast(image)
+    img1 <- rast(image)
     mask1 <- rast(mask)
     
     fName = basename(image)
@@ -76,8 +76,8 @@ chipIt <- function(image, mask, size=256, stride_x=256, sride_y=256, outDir, mod
     dir.create(paste0(outDir, "/images"))
     dir.create(paste0(outDir, "/masks"))
     
-    across_cnt = ncol(topo1)
-    down_cnt = nrow(topo1)
+    across_cnt = ncol(img1)
+    down_cnt = nrow(img1)
     tile_size_across = size
     tile_size_down = size
     overlap_across = stride_x
@@ -98,24 +98,24 @@ chipIt <- function(image, mask, size=256, stride_x=256, sride_y=256, outDir, mod
         c2 <- c + (stride_x-1)
         r2 <- r + (stride_y-1)
         if(c2 <= across_cnt && r2 <= down_cnt){ #Full chip
-          chip_data <- topo1[r1:r2, c1:c2, 1:3]
+          chip_data <- img1[r1:r2, c1:c2, 1:3]
           mask_data <- mask1[r1:r2, c1:c2, 1]
         }else if(c2 > across_cnt && r2 <= down_cnt){ # Last column
           c1b <- across_cnt - (size-1)
           c2b <- across_cnt
-          chip_data <- topo1[r1:r2, c1b:c2b, 1:3]
+          chip_data <- img1[r1:r2, c1b:c2b, 1:3]
           mask_data <- mask1[r1:r2, c1b:c2b, 1]
         }else if(c2 <= across_cnt && r2 > down_cnt){ #Last row
           r1b <- down_cnt - (size-1)
           r2b <- down_cnt
-          chip_data <- topo1[r1b:r2b, c1:c2, 1:3]
+          chip_data <- img1[r1b:r2b, c1:c2, 1:3]
           mask_data <- mask1[r1b:r2b, c1:c2, 1]
         }else{ # Last row, last column
           c1b <- across_cnt - (size -1)
           c2b <- across_cnt
           r1b <- down_cnt - (size -1)
           r2b <- down_cnt
-          chip_data <- topo1[r1b:r2b, c1b:c2b, 1:3]
+          chip_data <- img1[r1b:r2b, c1b:c2b, 1:3]
           mask_data <- mask1[r1b:r2b, c1b:c2b, 1]
         }
         names(chip_data) <- c("R", "G", "B")
@@ -135,8 +135,8 @@ chipIt <- function(image, mask, size=256, stride_x=256, sride_y=256, outDir, mod
         }
       }
     }
-  }else{
-    topo1 <- rast(image)
+  }else if(mode=="Divided") {
+    img1 <- rast(image)
     mask1 <- rast(mask)
     
     fName = basename(image)
@@ -149,8 +149,8 @@ chipIt <- function(image, mask, size=256, stride_x=256, sride_y=256, outDir, mod
     dir.create(paste0(outDir, "/masks/positive"))
     dir.create(paste0(outDir, "/masks/background"))
     
-    across_cnt = ncol(topo1)
-    down_cnt = nrow(topo1)
+    across_cnt = ncol(img1)
+    down_cnt = nrow(img1)
     tile_size_across = size
     tile_size_down = size
     overlap_across = stride_x
@@ -171,24 +171,24 @@ chipIt <- function(image, mask, size=256, stride_x=256, sride_y=256, outDir, mod
         c2 <- c + (stride_x-1)
         r2 <- r + (stride_y-1)
         if(c2 <= across_cnt && r2 <= down_cnt){ #Full chip
-          chip_data <- topo1[r1:r2, c1:c2, 1:3]
+          chip_data <- img1[r1:r2, c1:c2, 1:3]
           mask_data <- mask1[r1:r2, c1:c2, 1]
         }else if(c2 > across_cnt && r2 <= down_cnt){ # Last column
           c1b <- across_cnt - (size-1)
           c2b <- across_cnt
-          chip_data <- topo1[r1:r2, c1b:c2b, 1:3]
+          chip_data <- img1[r1:r2, c1b:c2b, 1:3]
           mask_data <- mask1[r1:r2, c1b:c2b, 1]
         }else if(c2 <= across_cnt && r2 > down_cnt){ #Last row
           r1b <- down_cnt - (size-1)
           r2b <- down_cnt
-          chip_data <- topo1[r1b:r2b, c1:c2, 1:3]
+          chip_data <- img1[r1b:r2b, c1:c2, 1:3]
           mask_data <- mask1[r1b:r2b, c1:c2, 1]
         }else{ # Last row, last column
           c1b <- across_cnt - (size -1)
           c2b <- across_cnt
           r1b <- down_cnt - (size -1)
           r2b <- down_cnt
-          chip_data <- topo1[r1b:r2b, c1b:c2b, 1:3]
+          chip_data <- img1[r1b:r2b, c1b:c2b, 1:3]
           mask_data <- mask1[r1b:r2b, c1b:c2b, 1]
         }
         names(chip_data) <- c("R", "G", "B")
@@ -211,12 +211,15 @@ chipIt <- function(image, mask, size=256, stride_x=256, sride_y=256, outDir, mod
         }
       }
     }
+  } else {
+    print("Invalid Mode Provided.")
   }
 }
 
 
-chipIt(image= "C:/Maxwell_Data/topo_data/topoDL/topos/KY_Adams_708051_1971_24000_geo.tif", 
-                   mask="C:/Maxwell_Data/topo_data/topoDL/masks/KY_Adams_708051_1971_24000_geo.tif",
-                   size=256, stride_x=256, sride_y=256, 
-                   outDir= "C:/Maxwell_Data/chip_test", 
-                   mode="Divided")
+chipIt(image= "PATH TO IMAGE", 
+       mask="PATH TO MASK",
+       size=256, stride_x=256, sride_y=256, 
+       outDir= "OUTPUT FOLDER", 
+       mode="Divided")
+

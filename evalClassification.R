@@ -1,10 +1,10 @@
 library(terra)
 library(sf)
 
-reference <- "C:/Maxwell_Data/topo_data/topo_dl_data/topo_dl_data/all_mines/KY_Beverly_708161_1979_24000_geo.shp"
-predicted <- "C:/Maxwell_Data/Dropbox/predictions3/KY_Beverly_708161_1979_24000_geo.tif"
-predicted <- rast(predicted)
-reference <- st_read(reference)
+reference <- "Reference Data"
+predicted <- "Predicted Data"
+predicted <- rast(predicted) #Load prediction raster
+reference <- st_read(reference) #Load reference vector/use rast() for raster
 
 evalClassification <- function(reference, predicted, truth_dtype="Vector", 
                                codes="codes", background = 0, mappings,

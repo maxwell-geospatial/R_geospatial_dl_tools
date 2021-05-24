@@ -2,7 +2,7 @@
 
 The goal of this repository is to describe and make available some utility functions for undertaking geospatial deep learning in the R data science environment. This is a work in progress, and we hope to continue to update the repo with new functions and tools. Here, we provide an explanation of the current functions made available. 
 
-These tools primarily rely on [terra](https://github.com/rspatial/terra) for raster data processing, [imager](https://github.com/dahtah/imager) for image manipulation, and [sf](https://github.com/r-spatial/sf) for vector data handling. Validation metrics are calculated using functions available in [caret](https://github.com/topepo/caret), [diffeR](https://github.com/amsantac/diffeR), and [rfUtilities](https://github.com/jeffreyevans/rfUtilities).
+These tools primarily rely on [terra](https://github.com/rspatial/terra) for raster data reading and processing, [imager](https://github.com/dahtah/imager) for image manipulation and writing, and [sf](https://github.com/r-spatial/sf) for vector data handling. Validation metrics are calculated using functions available in [caret](https://github.com/topepo/caret), [diffeR](https://github.com/amsantac/diffeR), and [rfUtilities](https://github.com/jeffreyevans/rfUtilities).
 
 ## makeMasks()
 
@@ -15,6 +15,7 @@ This function can be used to make raster masks for semantic segmentation problem
 * background: code to use for background if the mask data are not wall-to-wall. This should be a new value that does not overlap with your class codes (unless you would like to assign all the background cells to an existing class).
 * outImage: path and name of output image with file extension. If an extent is defined, input image will be clipped to this extent.
 * outMask: path and name of output mask with file extension.
+* mode: If "Both" export both mask and copy of image. If "Mask", just export mask. Should use "Both" if an extent is defined. 
 
 ## chipIt()
 
