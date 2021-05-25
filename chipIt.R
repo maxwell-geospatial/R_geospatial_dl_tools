@@ -1,4 +1,4 @@
-chipIt <- function(image, mask, size=256, stride_x=256, sride_y=256, outDir, mode="All"){
+chipIt <- function(image, mask, n_channels=3, size=256, stride_x=256, stride_y=256, outDir, mode="All"){
   require(terra)
   require(imager)
   if(mode == "All"){
@@ -32,38 +32,34 @@ chipIt <- function(image, mask, size=256, stride_x=256, sride_y=256, outDir, mod
         c2 <- c + (stride_x-1)
         r2 <- r + (stride_y-1)
         if(c2 <= across_cnt && r2 <= down_cnt){ #Full chip
-          chip_data <- img1[r1:r2, c1:c2, 1:3]
+          chip_data <- img1[r1:r2, c1:c2, 1:n_channels]
           mask_data <- mask1[r1:r2, c1:c2, 1]
         }else if(c2 > across_cnt && r2 <= down_cnt){ # Last column
           c1b <- across_cnt - (size-1)
           c2b <- across_cnt
-          chip_data <- img1[r1:r2, c1b:c2b, 1:3]
+          chip_data <- img1[r1:r2, c1b:c2b, 1:n_channels]
           mask_data <- mask1[r1:r2, c1b:c2b, 1]
         }else if(c2 <= across_cnt && r2 > down_cnt){ #Last row
           r1b <- down_cnt - (size-1)
           r2b <- down_cnt
-          chip_data <- img1[r1b:r2b, c1:c2, 1:3]
+          chip_data <- img1[r1b:r2b, c1:c2, 1:n_channels]
           mask_data <- mask1[r1b:r2b, c1:c2, 1]
         }else{ # Last row, last column
           c1b <- across_cnt - (size -1)
           c2b <- across_cnt
           r1b <- down_cnt - (size -1)
           r2b <- down_cnt
-          chip_data <- img1[r1b:r2b, c1b:c2b, 1:3]
+          chip_data <- img1[r1b:r2b, c1b:c2b, 1:n_channels]
           mask_data <- mask1[r1b:r2b, c1b:c2b, 1]
         }
-        names(chip_data) <- c("R", "G", "B")
-        R <- as.vector(chip_data$R)
-        G <- as.vector(chip_data$G)
-        B <- as.vector(chip_data$B)
-        chip_data2 <- c(R, G, B)
-        chip_array <- array(chip_data2, c(256,256,3))
-        img1 <- as.cimg(chip_array)
-        imager::save.image(img1, paste0(outDir, "/images/", substr(fName, 1, nchar(image)-4), "_", c1, "_", r1, ".png"))
+        chip_data2 <- c(stack(chip_data)[,1])
+        chip_array <- array(chip_data2, c(size,size,n_channels))
+        image1 <- as.cimg(chip_array, x=size, y=size, cc=n_channels)
+        imager::save.image(image1, paste0(outDir, "/images/", substr(fName, 1, nchar(image)-4), "_", c1, "_", r1, ".png"))
         names(mask_data) <- c("C")
         Cx <- as.vector(mask_data$C)
-        mask_array <- array(Cx, c(256,256,1))
-        msk1 <- as.cimg(mask_array)
+        mask_array <- array(Cx, c(size,size,1))
+        msk1 <- as.cimg(mask_array, x=size, y=size, cc=1)
         imager::save.image(msk1, paste0(outDir, "/masks/", substr(fName, 1, nchar(image)-4), "_", c1, "_", r1, ".png"))
       }
     }
@@ -98,39 +94,35 @@ chipIt <- function(image, mask, size=256, stride_x=256, sride_y=256, outDir, mod
         c2 <- c + (stride_x-1)
         r2 <- r + (stride_y-1)
         if(c2 <= across_cnt && r2 <= down_cnt){ #Full chip
-          chip_data <- img1[r1:r2, c1:c2, 1:3]
+          chip_data <- img1[r1:r2, c1:c2, 1:n_channels]
           mask_data <- mask1[r1:r2, c1:c2, 1]
         }else if(c2 > across_cnt && r2 <= down_cnt){ # Last column
           c1b <- across_cnt - (size-1)
           c2b <- across_cnt
-          chip_data <- img1[r1:r2, c1b:c2b, 1:3]
+          chip_data <- img1[r1:r2, c1b:c2b, 1:n_channels]
           mask_data <- mask1[r1:r2, c1b:c2b, 1]
         }else if(c2 <= across_cnt && r2 > down_cnt){ #Last row
           r1b <- down_cnt - (size-1)
           r2b <- down_cnt
-          chip_data <- img1[r1b:r2b, c1:c2, 1:3]
+          chip_data <- img1[r1b:r2b, c1:c2, 1:n_channels]
           mask_data <- mask1[r1b:r2b, c1:c2, 1]
         }else{ # Last row, last column
           c1b <- across_cnt - (size -1)
           c2b <- across_cnt
           r1b <- down_cnt - (size -1)
           r2b <- down_cnt
-          chip_data <- img1[r1b:r2b, c1b:c2b, 1:3]
+          chip_data <- img1[r1b:r2b, c1b:c2b, 1:n_channels]
           mask_data <- mask1[r1b:r2b, c1b:c2b, 1]
         }
-        names(chip_data) <- c("R", "G", "B")
-        R <- as.vector(chip_data$R)
-        G <- as.vector(chip_data$G)
-        B <- as.vector(chip_data$B)
-        chip_data2 <- c(R, G, B)
-        chip_array <- array(chip_data2, c(256,256,3))
-        img1 <- as.cimg(chip_array)
+        chip_data2 <- c(stack(chip_data)[,1])
+        chip_array <- array(chip_data2, c(size,size,n_channels))
+        image1 <- as.cimg(chip_array, x=size, y=size, cc=n_channels)
         names(mask_data) <- c("C")
         Cx <- as.vector(mask_data$C)
-        mask_array <- array(Cx, c(256,256,1))
-        msk1 <- as.cimg(mask_array)
+        mask_array <- array(Cx, c(sizes,size,1))
+        msk1 <- as.cimg(mask_array, x=size, y=size, cc=1)
         if(max(mask_array) > 0){
-          imager::save.image(img1, paste0(outDir, "/images/", substr(fName, 1, nchar(image)-4), "_", c1, "_", r1, ".png"))
+          imager::save.image(image1, paste0(outDir, "/images/", substr(fName, 1, nchar(image)-4), "_", c1, "_", r1, ".png"))
           imager::save.image(msk1, paste0(outDir, "/masks/", substr(fName, 1, nchar(image)-4), "_", c1, "_", r1, ".png"))
         }
       }
@@ -171,42 +163,38 @@ chipIt <- function(image, mask, size=256, stride_x=256, sride_y=256, outDir, mod
         c2 <- c + (stride_x-1)
         r2 <- r + (stride_y-1)
         if(c2 <= across_cnt && r2 <= down_cnt){ #Full chip
-          chip_data <- img1[r1:r2, c1:c2, 1:3]
+          chip_data <- img1[r1:r2, c1:c2, 1:n_channels]
           mask_data <- mask1[r1:r2, c1:c2, 1]
         }else if(c2 > across_cnt && r2 <= down_cnt){ # Last column
           c1b <- across_cnt - (size-1)
           c2b <- across_cnt
-          chip_data <- img1[r1:r2, c1b:c2b, 1:3]
+          chip_data <- img1[r1:r2, c1b:c2b, 1:n_channels]
           mask_data <- mask1[r1:r2, c1b:c2b, 1]
         }else if(c2 <= across_cnt && r2 > down_cnt){ #Last row
           r1b <- down_cnt - (size-1)
           r2b <- down_cnt
-          chip_data <- img1[r1b:r2b, c1:c2, 1:3]
+          chip_data <- img1[r1b:r2b, c1:c2, 1:n_channels]
           mask_data <- mask1[r1b:r2b, c1:c2, 1]
         }else{ # Last row, last column
           c1b <- across_cnt - (size -1)
           c2b <- across_cnt
           r1b <- down_cnt - (size -1)
           r2b <- down_cnt
-          chip_data <- img1[r1b:r2b, c1b:c2b, 1:3]
+          chip_data <- img1[r1b:r2b, c1b:c2b, 1:n_channels]
           mask_data <- mask1[r1b:r2b, c1b:c2b, 1]
         }
-        names(chip_data) <- c("R", "G", "B")
-        R <- as.vector(chip_data$R)
-        G <- as.vector(chip_data$G)
-        B <- as.vector(chip_data$B)
-        chip_data2 <- c(R, G, B)
-        chip_array <- array(chip_data2, c(256,256,3))
-        img1 <- as.cimg(chip_array)
+        chip_data2 <- c(stack(chip_data)[,1])
+        chip_array <- array(chip_data2, c(size,size,n_channels))
+        image1 <- as.cimg(chip_array, x=size, y=size, cc=n_channels)
         names(mask_data) <- c("C")
         Cx <- as.vector(mask_data$C)
-        mask_array <- array(Cx, c(256,256,1))
-        msk1 <- as.cimg(mask_array)
+        mask_array <- array(Cx, c(size,size,1))
+        msk1 <- as.cimg(mask_array, x=size, y=size, cc=1)
           if(max(mask_array) > 0){
-          imager::save.image(img1, paste0(outDir, "/images/positive/", substr(fName, 1, nchar(image)-4), "_", c1, "_", r1, ".png"))
+          imager::save.image(image1, paste0(outDir, "/images/positive/", substr(fName, 1, nchar(image)-4), "_", c1, "_", r1, ".png"))
           imager::save.image(msk1, paste0(outDir, "/masks/positive/", substr(fName, 1, nchar(image)-4), "_", c1, "_", r1, ".png"))
           }else{
-          imager::save.image(img1, paste0(outDir, "/images/background/", substr(fName, 1, nchar(image)-4), "_", c1, "_", r1, ".png"))
+          imager::save.image(image1, paste0(outDir, "/images/background/", substr(fName, 1, nchar(image)-4), "_", c1, "_", r1, ".png"))
           imager::save.image(msk1, paste0(outDir, "/masks/background/", substr(fName, 1, nchar(image)-4), "_", c1, "_", r1, ".png"))
         }
       }
@@ -217,9 +205,18 @@ chipIt <- function(image, mask, size=256, stride_x=256, sride_y=256, outDir, mod
 }
 
 
+chipIt(image= "C:/Maxwell_Data/inria/NEW2-AerialImageDataset/AerialImageDataset/train/images/austin1.tif", 
+       mask="C:/Maxwell_Data/inria/NEW2-AerialImageDataset/AerialImageDataset/train/gt/austin1.tif",
+       n_channels=3,
+       size=512, stride_x=512, stride_y=512, 
+       outDir= "C:/Maxwell_Data/chip_test", 
+       mode="Divided")
+
 chipIt(image= "PATH TO IMAGE", 
        mask="PATH TO MASK",
+       n_channels=3,
        size=256, stride_x=256, sride_y=256, 
        outDir= "OUTPUT FOLDER", 
        mode="Divided")
+
 
